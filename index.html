@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Print Services</title>
+    
+    <!-- Load CSS files -->
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/upload.css">
+    <link rel="stylesheet" href="./css/print-options.css">
+    <link rel="stylesheet" href="./css/payment.css">
+    
+    <!-- Load JavaScript files -->
+    <script src="./js/upload.js" defer></script>
+    <script src="./js/print-options.js" defer></script>
+    <script src="./js/payment.js" defer></script>
+    <script src="./js/main.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>Campus Print Services</h1>
+            <div class="user-controls">
+                <button id="orderHistory">My Orders</button>
+                <button id="accountBtn">Account</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Upload Section -->
+        <section class="upload-container">
+            <h2>Print Documents</h2>
+            <div class="upload-box">
+                <div class="pricing-info">
+                    <h3>Standard Printing</h3>
+                    <ul>
+                        <li>Black & White: $0.10/page</li>
+                        <li>Color: $0.50/page</li>
+                        <li>Available paper sizes: A4, Letter</li>
+                    </ul>
+                </div>
+                <div class="upload-controls">
+                    <button id="uploadBtn" class="primary-btn">Upload Files</button>
+                    <p class="support-text">Supports PDF, Word, and Image files</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Print Options (Initially Hidden) -->
+        <section id="printOptions" class="print-options hidden">
+            <h3>Print Settings</h3>
+            <div class="options-grid">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Order Summary (Initially Hidden) -->
+        <section id="orderSummary" class="order-summary hidden">
+            <!-- Will be populated by JavaScript -->
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="uploadModal" class="modal hidden"></div>
+    <div id="paymentModal" class="modal hidden"></div>
+</body>
+</html> 

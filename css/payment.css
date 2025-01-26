@@ -1,0 +1,121 @@
+.payment-container {
+    background: var(--surface);
+    max-width: 600px;
+    margin: 2rem auto;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.payment-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--text-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.payment-body {
+    padding: 1.5rem;
+}
+
+.payment-methods {
+    margin: 2rem 0;
+}
+
+.method-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.method-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid var(--text-light);
+    border-radius: 8px;
+    background: var(--background);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.method-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: white;
+}
+
+.method-icon {
+    font-size: 1.5rem;
+}
+
+.payment-upi, .payment-cash {
+    text-align: center;
+    padding: 2rem;
+}
+
+.qr-placeholder {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border: 2px solid var(--text-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+}
+
+.token-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 1rem 0;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 8px;
+}
+
+.payment-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--text-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Modal backdrop */
+#paymentModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+@media (max-width: 768px) {
+    .payment-container {
+        margin: 0;
+        border-radius: 0;
+        height: 100vh;
+    }
+} 

@@ -1,0 +1,104 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --success: #16a34a;
+    --error: #dc2626;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* Header Styles */
+header {
+    background: var(--surface);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delivery-info {
+    margin-bottom: 1rem;
+}
+
+.search-bar {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    padding-right: 2.5rem;
+}
+
+/* Main content area */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.upload-container {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.upload-box {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+    background: var(--primary-dark);
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .upload-box {
+        grid-template-columns: 1fr;
+    }
+} 
