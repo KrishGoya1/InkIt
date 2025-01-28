@@ -325,9 +325,4 @@ class PrintUploader {
     showError(message) {
         alert(message); // Replace with better UI feedback
     }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new PrintUploader();
-}); 
+} 
