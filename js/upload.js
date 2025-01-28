@@ -107,77 +107,9 @@ class PrintUploader {
         previewContainer.innerHTML = '';
 
         for (const file of this.currentFiles) {
-            const preview = document.createElement('div');
-            preview.className = 'file-preview';
-            
-            // Create preview content container
-            const previewContent = document.createElement('div');
-            previewContent.className = 'preview-content';
-
-            // Add remove button
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-file';
-            removeBtn.innerHTML = '×';
-            removeBtn.onclick = () => this.removeFile(file);
-            previewContent.appendChild(removeBtn);
-
-            if (file.type === 'application/pdf') {
-                try {
-                    const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
-                    totalPages += pdf.numPages;
-                    
-                    // Get first page as preview
-                    const page = await pdf.getPage(1);
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    const viewport = page.getViewport({ scale: 0.5 });
-                    
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-                    
-                    await page.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
-
-                    previewContent.appendChild(canvas);
-                    
-                    // Add page count for PDFs
-                    const pageCount = document.createElement('span');
-                    pageCount.className = 'page-count';
-                    pageCount.textContent = `${pdf.numPages} pages`;
-                    previewContent.appendChild(pageCount);
-                } catch (error) {
-                    console.error('PDF preview failed:', error);
-                }
-            } else if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.onload = () => URL.revokeObjectURL(img.src);
-                previewContent.appendChild(img);
-                totalPages += 1;
-            }
-            
-            preview.appendChild(previewContent);
-
-            // Add controls container
-            const controls = document.createElement('div');
-            controls.className = 'preview-controls';
-            
-            // Add copies control
-            const copiesControl = this.createCopiesControl(file);
-            controls.appendChild(copiesControl);
-            
-            // Add color toggle
-            const colorToggle = this.createColorToggle(file);
-            controls.appendChild(colorToggle);
-            
-            // Add orientation select
-            const orientationSelect = this.createOrientationSelect(file);
-            controls.appendChild(orientationSelect);
-            
-            preview.appendChild(controls);
+            const preview = this.createFilePreview(file);
             previewContainer.appendChild(preview);
+            totalPages += 1;
         }
 
         // Update page count in print options
@@ -186,84 +118,123 @@ class PrintUploader {
         }
     }
 
-    createCopiesControl(file) {
-        const container = document.createElement('div');
-        container.className = 'copies-control';
+    createFilePreview(file) {
+        const preview = document.createElement('div');
+        preview.className = 'file-preview';
         
-        const decreaseBtn = document.createElement('button');
-        decreaseBtn.textContent = '-';
+        // Left side - Preview content with file info header
+        const previewSection = document.createElement('div');
+        previewSection.className = 'preview-section';
         
-        const count = document.createElement('span');
-        count.className = 'copies-count';
-        count.textContent = '1';
-        
-        const increaseBtn = document.createElement('button');
-        increaseBtn.textContent = '+';
-        
-        container.appendChild(decreaseBtn);
-        container.appendChild(count);
-        container.appendChild(increaseBtn);
-        
-        // Add event listeners
-        decreaseBtn.onclick = () => {
-            const current = parseInt(count.textContent);
-            if (current > 1) {
-                count.textContent = current - 1;
-                this.updateFileOptions(file, 'copies', current - 1);
-            }
-        };
-        
-        increaseBtn.onclick = () => {
-            const current = parseInt(count.textContent);
-            count.textContent = current + 1;
-            this.updateFileOptions(file, 'copies', current + 1);
-        };
-        
-        return container;
-    }
-
-    createColorToggle(file) {
-        const container = document.createElement('div');
-        container.className = 'color-toggle';
-        
-        const bwBtn = document.createElement('button');
-        bwBtn.textContent = 'B&W';
-        bwBtn.className = 'selected';
-        
-        const colorBtn = document.createElement('button');
-        colorBtn.textContent = 'Color';
-        
-        container.appendChild(bwBtn);
-        container.appendChild(colorBtn);
-        
-        // Add event listeners
-        bwBtn.onclick = () => {
-            bwBtn.classList.add('selected');
-            colorBtn.classList.remove('selected');
-            this.updateFileOptions(file, 'color', 'bw');
-        };
-        
-        colorBtn.onclick = () => {
-            colorBtn.classList.add('selected');
-            bwBtn.classList.remove('selected');
-            this.updateFileOptions(file, 'color', 'color');
-        };
-        
-        return container;
-    }
-
-    createOrientationSelect(file) {
-        const select = document.createElement('select');
-        select.innerHTML = `
-            <option value="portrait">Portrait</option>
-            <option value="landscape">Landscape</option>
+        const header = document.createElement('div');
+        header.className = 'preview-header';
+        header.innerHTML = `
+            <div class="file-info">
+                <p class="file-name">${file.name}</p>
+                <span class="file-size">${this.formatFileSize(file.size)}</span>
+            </div>
+            <button class="remove-file" title="Remove file">×</button>
         `;
         
-        select.onchange = (e) => {
-            this.updateFileOptions(file, 'orientation', e.target.value);
-        };
+        const previewContent = document.createElement('div');
+        previewContent.className = 'preview-content';
         
-        return select;
+        // Handle different file types for preview
+        if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.onload = () => URL.revokeObjectURL(img.src);
+            previewContent.appendChild(img);
+        } else if (file.type === 'application/pdf') {
+            previewContent.innerHTML = `
+                <div class="pdf-preview">
+                    <span class="file-icon">📄</span>
+                    <span>PDF Document</span>
+                </div>
+            `;
+        }
+        
+        previewSection.appendChild(header);
+        previewSection.appendChild(previewContent);
+        
+        // Right side - Settings with pricing
+        const settingsContainer = document.createElement('div');
+        settingsContainer.className = 'preview-settings';
+        
+        const controls = document.createElement('div');
+        controls.className = 'preview-controls';
+        controls.innerHTML = `
+            <div class="control-group">
+                <label>Copies</label>
+                <div class="copies-control">
+                    <button type="button" class="decrease">-</button>
+                    <span class="copies-count">1</span>
+                    <button type="button" class="increase">+</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Print Type</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle-btn selected" data-value="bw" data-price="3">
+                        B&W
+                        <span class="price-tag">₹3/pg</span>
+                    </button>
+                    <button type="button" class="toggle-btn" data-value="color" data-price="10">
+                        Color
+                        <span class="price-tag">₹10/pg</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>Layout</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle-btn selected" data-value="single">1-Sided</button>
+                    <button type="button" class="toggle-btn" data-value="double">2-Sided</button>
+                </div>
+            </div>
+
+            <div class="price-summary">
+                <span class="price-label">Subtotal:</span>
+                <span class="price-value">₹${this.calculatePrice(1, 'bw')}</span>
+            </div>
+        `;
+
+        preview.appendChild(previewSection);
+        preview.appendChild(settingsContainer);
+        settingsContainer.appendChild(controls);
+        
+        this.setupPreviewControls(preview, file);
+        
+        return preview;
+    }
+
+    calculatePrice(copies, type) {
+        const pricePerPage = type === 'bw' ? 3 : 10;
+        return copies * pricePerPage;
+    }
+
+    getFileIcon(type) {
+        const icons = {
+            'application/pdf': '📄',
+            'image': '🖼️',
+            'application/msword': '📝',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '📝'
+        };
+        return icons[type] || icons[type.split('/')[0]] || '📄';
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    setupPreviewControls(preview, file) {
+        // Implementation of setupPreviewControls method
     }
 
     updateFileOptions(file, option, value) {
@@ -279,34 +250,28 @@ class PrintUploader {
     }
 
     updateTotalPrice() {
-        // Calculate total price based on all files and their options
-        let total = 0;
-        for (const file of this.currentFiles) {
-            const options = file.printOptions || {
-                copies: 1,
-                color: 'bw',
-                orientation: 'portrait'
-            };
-            
-            const pricePerPage = options.color === 'bw' ? 3 : 10; // ₹3 for B&W, ₹10 for color
-            total += pricePerPage * options.copies;
+        const total = this.calculateTotalPrice();
+        const paymentFab = document.getElementById('proceedToPayment');
+        if (paymentFab) {
+            paymentFab.querySelector('.total-amount').textContent = `₹${total}`;
         }
-        
-        // Update price display if needed
-        // You can implement this based on your UI requirements
+    }
+
+    calculateTotalPrice() {
+        let total = 0;
+        this.currentFiles.forEach(file => {
+            const preview = document.querySelector(`[data-file-id="${file.id}"]`);
+            const copies = parseInt(preview.querySelector('.copies-count').textContent);
+            const type = preview.querySelector('.toggle-btn.selected').dataset.value;
+            const pricePerPage = type === 'bw' ? 3 : 10;
+            total += copies * pricePerPage;
+        });
+        return total;
     }
 
     removeFile(fileToRemove) {
         this.currentFiles = this.currentFiles.filter(file => file !== fileToRemove);
         this.generatePreviews();
-    }
-
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     showPrintOptions() {

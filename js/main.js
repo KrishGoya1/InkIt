@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if required elements exist
         const requiredElements = [
             'uploadBtn',
-            'printOptions',
             'paymentModal'
         ];
 
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initialize components
         try {
             window.printUploader = new PrintUploader();
-            window.printOptionsManager = new PrintOptionsManager();
             window.paymentHandler = new PaymentHandler();
 
             // Connect components
@@ -29,22 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const connectComponents = () => {
-        // Connect upload completion to print options
-        if (window.printUploader && window.printOptionsManager) {
+        // Connect upload completion to payment
+        if (window.printUploader && window.paymentHandler) {
             window.printUploader.onUploadComplete = (files) => {
-                // Simulate page count (in real app, would be calculated from files)
-                const pageCount = files.reduce((total, file) => total + 1, 0);
-                window.printOptionsManager.setPageCount(pageCount);
-            };
-        }
-
-        // Connect print options to payment
-        if (window.printOptionsManager && window.paymentHandler) {
-            window.printOptionsManager.onProceedToPayment = (options) => {
-                window.paymentHandler.showPayment(options);
+                const paymentFab = document.getElementById('proceedToPayment');
+                if (files.length > 0) {
+                    paymentFab.classList.remove('hidden');
+                    // Update total amount
+                    const total = window.printUploader.calculateTotalPrice();
+                    paymentFab.querySelector('.total-amount').textContent = `₹${total}`;
+                } else {
+                    paymentFab.classList.add('hidden');
+                }
             };
         }
     };
 
+    // Initialize the app
     init();
 }); 

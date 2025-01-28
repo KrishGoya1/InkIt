@@ -16,23 +16,49 @@
     border-radius: var(--border-radius);
 }
 
-.pricing-info {
+.header-with-pricing {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-.pricing-info ul {
-    list-style: none;
-    padding: 0;
+.header-with-pricing h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text);
 }
 
-.pricing-info li {
+.pricing-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.price-pill {
+    background: var(--background);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    font-size: 0.875rem;
     color: var(--text-light);
-    margin: 0.5rem 0;
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .upload-progress {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
     padding: 2rem;
-    text-align: center;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+    z-index: 1000;
 }
 
 .progress {
@@ -57,47 +83,162 @@
 }
 
 .preview-container {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: var(--spacing-md);
-    margin-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
-    scrollbar-width: thin;
-    -webkit-overflow-scrolling: touch;
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .file-preview {
-    flex: 0 0 200px;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1rem;
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    align-items: start;
+}
+
+.preview-content {
     background: var(--background);
     border-radius: var(--border-radius);
-    padding: var(--spacing-sm);
-    position: relative;
-    transition: transform 0.2s;
+    padding: 0.5rem;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.preview-content img,
+.preview-content canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.preview-settings {
     display: flex;
     flex-direction: column;
+    gap: 1rem;
 }
 
-.file-preview:hover {
-    transform: translateY(-2px);
+.preview-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-.file-preview canvas,
-.file-preview img {
-    width: 100%;
-    height: 200px;
-    object-fit: contain;
-    margin-bottom: 0.5rem;
+.file-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: var(--background);
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 1.25rem;
 }
 
 .file-info {
-    font-size: 0.875rem;
-    color: var(--text-light);
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-weight: 500;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.file-size {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.preview-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    background: var(--background);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.control-group label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    min-width: 70px;
+}
+
+.copies-control {
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.copies-control button {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: none;
+    color: var(--text);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.copies-control button:hover {
+    background: var(--background);
+}
+
+.copies-count {
+    width: 32px;
+    text-align: center;
+    font-size: 0.875rem;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    line-height: 28px;
+}
+
+.toggle-group {
+    display: inline-flex;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.toggle-btn {
+    padding: 0.25rem 0.75rem;
+    border: none;
+    background: none;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-btn.selected {
+    background: var(--primary);
+    color: white;
+}
+
+.toggle-btn:not(:last-child) {
+    border-right: 1px solid var(--border-color);
 }
 
 .documents-container {
@@ -105,10 +246,9 @@
 }
 
 .preview-section {
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .preview-header {
@@ -142,18 +282,20 @@
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
+    background: none;
     border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    color: var(--text-light);
+    font-size: 1.25rem;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    z-index: 1;
+    padding: 0.25rem;
+    line-height: 1;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.remove-file:hover {
+    background: var(--background);
+    color: var(--error);
 }
 
 .file-preview canvas,
@@ -227,12 +369,12 @@
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
-    .preview-container {
-        gap: var(--spacing-sm);
-    }
-    
     .file-preview {
-        flex: 0 0 150px;
+        grid-template-columns: 1fr;
+    }
+
+    .preview-content {
+        height: 150px;
     }
 }
 
@@ -241,9 +383,9 @@
 }
 
 .preview-controls {
-    margin-top: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--border-color);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
 }
 
 .preview-controls select,
@@ -296,4 +438,92 @@
     background: var(--primary);
     color: white;
     border-color: var(--primary);
+}
+
+@media (max-width: 640px) {
+    .header-with-pricing {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.preview-content {
+    background: var(--background);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.preview-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.pdf-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+}
+
+.pdf-preview .file-icon {
+    font-size: 3rem;
+}
+
+.toggle-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+}
+
+.price-tag {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.price-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.price-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Add a floating action button for payment */
+.payment-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--primary);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 100;
+}
+
+.payment-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 } 

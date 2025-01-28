@@ -8,13 +8,14 @@
 :root {
     --primary: #4f46e5;
     --primary-dark: #4338ca;
+    --primary-light: #818cf8;
     --success: #16a34a;
     --error: #dc2626;
-    --background: #f9fafb;
+    --background: #f8fafc;
     --surface: #ffffff;
-    --text: #111827;
-    --text-light: #6b7280;
-    --border-color: #e5e7eb;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border-color: #e2e8f0;
     --spacing-xs: 0.5rem;
     --spacing-sm: 0.75rem;
     --spacing-md: 1.25rem;
@@ -70,30 +71,29 @@ nav {
 
 /* Main content area */
 main {
-    max-width: 1200px;
-    margin: var(--spacing-lg) auto;
-    padding: 0 var(--spacing-sm);
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
     display: grid;
-    gap: var(--spacing-lg);
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
 }
 
+/* Make the upload section sticky */
 .upload-container {
-    background: white;
-    border-radius: 16px;
-    padding: 2.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
+    position: sticky;
+    top: 2rem;
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .upload-box {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 3rem;
-    margin-top: 2rem;
-    background: var(--background);
-    border-radius: 12px;
-    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 .primary-btn {
@@ -120,19 +120,13 @@ main {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     main {
-        margin: var(--spacing-sm) auto;
-        gap: var(--spacing-sm);
-    }
-    
-    .upload-container, 
-    .print-options,
-    .order-summary {
-        padding: var(--spacing-sm);
-    }
-    
-    .upload-box {
         grid-template-columns: 1fr;
+    }
+    
+    .upload-container {
+        position: relative;
+        top: 0;
     }
 } 
