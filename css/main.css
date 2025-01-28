@@ -14,6 +14,13 @@
     --surface: #ffffff;
     --text: #1e293b;
     --text-light: #64748b;
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --border-radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 body {
@@ -21,13 +28,17 @@ body {
     background: var(--background);
     color: var(--text);
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Header Styles */
 header {
     background: var(--surface);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 1rem;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: var(--spacing-sm);
 }
 
 nav {
@@ -36,6 +47,7 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 var(--spacing-sm);
 }
 
 .delivery-info {
@@ -58,15 +70,19 @@ nav {
 /* Main content area */
 main {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+    margin: var(--spacing-lg) auto;
+    padding: 0 var(--spacing-sm);
+    display: grid;
+    gap: var(--spacing-lg);
 }
 
-.upload-container {
+.upload-container, 
+.print-options,
+.order-summary {
     background: var(--surface);
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow);
 }
 
 .upload-box {
@@ -98,6 +114,17 @@ main {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    main {
+        margin: var(--spacing-sm) auto;
+        gap: var(--spacing-sm);
+    }
+    
+    .upload-container, 
+    .print-options,
+    .order-summary {
+        padding: var(--spacing-sm);
+    }
+    
     .upload-box {
         grid-template-columns: 1fr;
     }

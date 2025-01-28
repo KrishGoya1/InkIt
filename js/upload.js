@@ -22,9 +22,9 @@ class PrintUploader {
         this.previewSection.innerHTML = `
             <div class="preview-header">
                 <h3>Uploaded Documents</h3>
-                <button class="add-more-btn">+ Add More</button>
             </div>
             <div class="preview-container"></div>
+            <button class="add-more-btn">+ Add More Files</button>
         `;
         this.documentsContainer.appendChild(this.previewSection);
         
@@ -109,13 +109,17 @@ class PrintUploader {
         for (const file of this.currentFiles) {
             const preview = document.createElement('div');
             preview.className = 'file-preview';
+            
+            // Create preview content container
+            const previewContent = document.createElement('div');
+            previewContent.className = 'preview-content';
 
             // Add remove button
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-file';
             removeBtn.innerHTML = '×';
             removeBtn.onclick = () => this.removeFile(file);
-            preview.appendChild(removeBtn);
+            previewContent.appendChild(removeBtn);
 
             if (file.type === 'application/pdf') {
                 try {
@@ -136,13 +140,13 @@ class PrintUploader {
                         viewport: viewport
                     }).promise;
 
-                    preview.appendChild(canvas);
+                    previewContent.appendChild(canvas);
                     
                     // Add page count for PDFs
                     const pageCount = document.createElement('span');
                     pageCount.className = 'page-count';
                     pageCount.textContent = `${pdf.numPages} pages`;
-                    preview.appendChild(pageCount);
+                    previewContent.appendChild(pageCount);
                 } catch (error) {
                     console.error('PDF preview failed:', error);
                 }
@@ -150,18 +154,29 @@ class PrintUploader {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
                 img.onload = () => URL.revokeObjectURL(img.src);
-                preview.appendChild(img);
+                previewContent.appendChild(img);
                 totalPages += 1;
             }
+            
+            preview.appendChild(previewContent);
 
-            const fileInfo = document.createElement('div');
-            fileInfo.className = 'file-info';
-            fileInfo.innerHTML = `
-                <p class="file-name">${file.name}</p>
-                <p class="file-size">${this.formatFileSize(file.size)}</p>
-            `;
-            preview.appendChild(fileInfo);
-
+            // Add controls container
+            const controls = document.createElement('div');
+            controls.className = 'preview-controls';
+            
+            // Add copies control
+            const copiesControl = this.createCopiesControl(file);
+            controls.appendChild(copiesControl);
+            
+            // Add color toggle
+            const colorToggle = this.createColorToggle(file);
+            controls.appendChild(colorToggle);
+            
+            // Add orientation select
+            const orientationSelect = this.createOrientationSelect(file);
+            controls.appendChild(orientationSelect);
+            
+            preview.appendChild(controls);
             previewContainer.appendChild(preview);
         }
 
@@ -169,6 +184,116 @@ class PrintUploader {
         if (window.printOptionsManager) {
             window.printOptionsManager.setPageCount(totalPages);
         }
+    }
+
+    createCopiesControl(file) {
+        const container = document.createElement('div');
+        container.className = 'copies-control';
+        
+        const decreaseBtn = document.createElement('button');
+        decreaseBtn.textContent = '-';
+        
+        const count = document.createElement('span');
+        count.className = 'copies-count';
+        count.textContent = '1';
+        
+        const increaseBtn = document.createElement('button');
+        increaseBtn.textContent = '+';
+        
+        container.appendChild(decreaseBtn);
+        container.appendChild(count);
+        container.appendChild(increaseBtn);
+        
+        // Add event listeners
+        decreaseBtn.onclick = () => {
+            const current = parseInt(count.textContent);
+            if (current > 1) {
+                count.textContent = current - 1;
+                this.updateFileOptions(file, 'copies', current - 1);
+            }
+        };
+        
+        increaseBtn.onclick = () => {
+            const current = parseInt(count.textContent);
+            count.textContent = current + 1;
+            this.updateFileOptions(file, 'copies', current + 1);
+        };
+        
+        return container;
+    }
+
+    createColorToggle(file) {
+        const container = document.createElement('div');
+        container.className = 'color-toggle';
+        
+        const bwBtn = document.createElement('button');
+        bwBtn.textContent = 'B&W';
+        bwBtn.className = 'selected';
+        
+        const colorBtn = document.createElement('button');
+        colorBtn.textContent = 'Color';
+        
+        container.appendChild(bwBtn);
+        container.appendChild(colorBtn);
+        
+        // Add event listeners
+        bwBtn.onclick = () => {
+            bwBtn.classList.add('selected');
+            colorBtn.classList.remove('selected');
+            this.updateFileOptions(file, 'color', 'bw');
+        };
+        
+        colorBtn.onclick = () => {
+            colorBtn.classList.add('selected');
+            bwBtn.classList.remove('selected');
+            this.updateFileOptions(file, 'color', 'color');
+        };
+        
+        return container;
+    }
+
+    createOrientationSelect(file) {
+        const select = document.createElement('select');
+        select.innerHTML = `
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+        `;
+        
+        select.onchange = (e) => {
+            this.updateFileOptions(file, 'orientation', e.target.value);
+        };
+        
+        return select;
+    }
+
+    updateFileOptions(file, option, value) {
+        if (!file.printOptions) {
+            file.printOptions = {
+                copies: 1,
+                color: 'bw',
+                orientation: 'portrait'
+            };
+        }
+        file.printOptions[option] = value;
+        this.updateTotalPrice();
+    }
+
+    updateTotalPrice() {
+        // Calculate total price based on all files and their options
+        let total = 0;
+        for (const file of this.currentFiles) {
+            const options = file.printOptions || {
+                copies: 1,
+                color: 'bw',
+                orientation: 'portrait'
+            };
+            
+            const pricePerPage = options.color === 'bw' ? 3 : 10; // ₹3 for B&W, ₹10 for color
+            total += pricePerPage * options.copies;
+        }
+        
+        // Update price display if needed
+        // You can implement this based on your UI requirements
     }
 
     removeFile(fileToRemove) {

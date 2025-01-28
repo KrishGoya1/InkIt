@@ -7,12 +7,13 @@
 }
 
 .upload-box {
-    border: 2px dashed var(--text-light);
-    border-radius: 8px;
-    padding: 2rem;
-    text-align: center;
-    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    align-items: start;
+    padding: var(--spacing-md);
     background: var(--background);
+    border-radius: var(--border-radius);
 }
 
 .pricing-info {
@@ -56,17 +57,29 @@
 }
 
 .preview-container {
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
 }
 
 .file-preview {
-    background: var(--surface);
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    flex: 0 0 200px;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-sm);
+    position: relative;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-preview:hover {
+    transform: translateY(-2px);
 }
 
 .file-preview canvas,
@@ -99,34 +112,30 @@
 }
 
 .preview-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 1rem;
 }
 
+.preview-header h3 {
+    color: var(--text);
+    font-size: 1.25rem;
+}
+
 .add-more-btn {
+    display: block;
+    width: fit-content;
+    margin: var(--spacing-md) auto 0;
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-size: 0.875rem;
+    transition: background-color 0.2s;
 }
 
-.preview-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.file-preview {
-    position: relative;
-    background: var(--background);
-    border-radius: 8px;
-    padding: 1rem;
-    border: 1px solid var(--border-color);
+.add-more-btn:hover {
+    background: var(--primary-dark);
 }
 
 .remove-file {
@@ -199,4 +208,92 @@
     margin-top: 0.5rem;
     color: var(--text-light);
     font-size: 0.875rem;
+}
+
+/* Custom scrollbar for preview container */
+.preview-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.preview-container::-webkit-scrollbar-track {
+    background: var(--background);
+    border-radius: 3px;
+}
+
+.preview-container::-webkit-scrollbar-thumb {
+    background: var(--text-light);
+    border-radius: 3px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .preview-container {
+        gap: var(--spacing-sm);
+    }
+    
+    .file-preview {
+        flex: 0 0 150px;
+    }
+}
+
+.preview-content {
+    flex: 1;
+}
+
+.preview-controls {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--border-color);
+}
+
+.preview-controls select,
+.preview-controls .copies-control {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--surface);
+}
+
+.copies-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.copies-control button {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    padding: 0.25rem;
+}
+
+.copies-count {
+    text-align: center;
+    min-width: 1.5rem;
+}
+
+.color-toggle {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.color-toggle button {
+    flex: 1;
+    padding: 0.25rem;
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--surface);
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.color-toggle button.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
 } 
