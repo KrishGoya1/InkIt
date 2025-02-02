@@ -234,7 +234,48 @@ class PrintUploader {
     }
 
     setupPreviewControls(preview, file) {
-        // Implementation of setupPreviewControls method
+        // Copies control
+        const copiesControl = preview.querySelector('.copies-control');
+        const copiesCount = copiesControl.querySelector('.copies-count');
+        
+        copiesControl.querySelector('.decrease').addEventListener('click', () => {
+            const current = parseInt(copiesCount.textContent);
+            if (current > 1) {
+                copiesCount.textContent = current - 1;
+                this.updateFileOptions(file, 'copies', current - 1);
+            }
+        });
+
+        copiesControl.querySelector('.increase').addEventListener('click', () => {
+            const current = parseInt(copiesCount.textContent);
+            if (current < 99) {
+                copiesCount.textContent = current + 1;
+                this.updateFileOptions(file, 'copies', current + 1);
+            }
+        });
+
+        // Print type toggle
+        preview.querySelectorAll('.toggle-group .toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const group = btn.closest('.toggle-group');
+                group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                
+                // Update price
+                const priceValue = preview.querySelector('.price-value');
+                const copies = parseInt(copiesCount.textContent);
+                const type = btn.dataset.value;
+                priceValue.textContent = `₹${this.calculatePrice(copies, type)}`;
+                
+                this.updateFileOptions(file, 'printType', type);
+            });
+        });
+
+        // Remove file button
+        preview.querySelector('.remove-file').addEventListener('click', () => {
+            this.removeFile(file);
+            this.updateTotalPrice();
+        });
     }
 
     updateFileOptions(file, option, value) {
@@ -288,6 +329,6 @@ class PrintUploader {
     }
 
     showError(message) {
-        alert(message); // Replace with better UI feedback
+        window.toastManager.show(message, 'error');
     }
 } 

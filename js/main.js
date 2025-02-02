@@ -11,11 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (missingElements.length > 0) {
             console.error('Missing required elements:', missingElements);
+            window.toastManager.show('Failed to initialize application', 'error');
             return;
         }
 
         // Initialize components
         try {
+            window.toastManager = new ToastManager();
             window.printUploader = new PrintUploader();
             window.paymentHandler = new PaymentHandler();
 
@@ -23,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             connectComponents();
         } catch (error) {
             console.error('Initialization failed:', error);
+            window.toastManager.show('Failed to initialize application', 'error');
         }
     };
 
