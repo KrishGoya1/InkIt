@@ -501,8 +501,21 @@
 }
 
 .price-value {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--primary);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.price-value.update-flash {
+    animation: priceUpdate 0.6s ease;
+}
+
+@keyframes priceUpdate {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); color: var(--accent); }
+    100% { transform: scale(1); }
 }
 
 /* Add a floating action button for payment */
@@ -526,4 +539,23 @@
 .payment-fab:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+.drag-drop-zone {
+    border: 2px dashed var(--border-color);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.drag-drop-zone.dragover {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.1);
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    fill: var(--text-light);
 } 

@@ -38,17 +38,32 @@
         <!-- Upload Section -->
         <section class="upload-container">
             <div class="header-with-pricing">
-                <h2>Print Documents</h2>
-                <div class="pricing-pills">
-                    <span class="price-pill">B&W: ₹3/pg</span>
-                    <span class="price-pill">Color: ₹10/pg</span>
-                    <span class="price-pill">A4/Letter</span>
+                <h2>
+                    <svg class="icon-upload" aria-hidden="true">
+                        <use href="#icon-upload"></use>
+                    </svg>
+                    Print Documents
+                </h2>
+                <div class="pricing-card">
+                    <div class="pricing-badges">
+                        <div class="pricing-badge">
+                            <span class="price">₹3</span>
+                            <span class="label">B&W</span>
+                        </div>
+                        <div class="pricing-badge accent">
+                            <span class="price">₹10</span>
+                            <span class="label">Color</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="upload-box">
-                <div class="upload-controls">
-                    <button id="uploadBtn" class="primary-btn">Upload Files</button>
-                    <p class="support-text">Supports PDF, Word, and Image files</p>
+            <div class="drag-drop-zone" id="dropZone">
+                <div class="upload-content">
+                    <svg class="upload-icon" aria-hidden="true">
+                        <use href="#icon-cloud-upload"></use>
+                    </svg>
+                    <p class="upload-instruction">Drag files here or <button id="uploadBtn">browse</button></p>
+                    <span class="file-support">Supports PDF, DOCX, JPG (Max 25MB)</span>
                 </div>
             </div>
             <!-- Preview container will be added here by JavaScript -->
@@ -65,4 +80,4 @@
     <div id="uploadModal" class="modal hidden"></div>
     <div id="paymentModal" class="modal hidden"></div>
 </body>
-</html> 
+</html> </html> 
