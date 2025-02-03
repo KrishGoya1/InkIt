@@ -124,9 +124,10 @@ class PrintUploader {
                 fileCountDisplay.textContent = `${i + 1}/${newFiles.length} files`;
             }
 
-            // Calculate price after full processing
-            const pricePerPage = 3; // Default B&W rate
-            const totalPrice = processedPages * pricePerPage;
+            // Replace flat rate with first file's settings
+            const initialType = this.currentFiles[0]?.printType || 'bw';
+            const pricePerPage = initialType === 'bw' ? 3 : 10;
+            const totalPrice = processedPages * pricePerPage; // Temporary until UI selection
             
             // Update UI before closing
             this.updatePriceDisplay(totalPrice);
@@ -240,7 +241,7 @@ class PrintUploader {
 
             <div class="price-summary">
                 <span class="price-label">Subtotal:</span>
-                <span class="price-value">₹${this.calculatePrice(1, 'bw')}</span>
+                <span class="price-value">₹${this.calculatePrice(file.pageCount, 1, 'bw')}</span>
             </div>
         `;
 
@@ -250,12 +251,14 @@ class PrintUploader {
         
         this.setupPreviewControls(preview, file);
         
+        file.printType = 'bw'; // Default value
+        
         return preview;
     }
 
-    calculatePrice(copies, type) {
+    calculatePrice(pages, copies, type) {
         const pricePerPage = type === 'bw' ? 3 : 10;
-        return copies * pricePerPage;
+        return pages * copies * pricePerPage;
     }
 
     getFileIcon(type) {
@@ -311,7 +314,9 @@ class PrintUploader {
                 // Update price
                 const priceValue = preview.querySelector('.price-value');
                 const copies = parseInt(copiesCount.textContent);
-                priceValue.textContent = `₹${this.calculatePrice(copies, type)}`;
+                priceValue.textContent = `₹${
+                    this.calculatePrice(file.pageCount, copies, type)
+                }`;
                 
                 this.updateFileOptions(file, 'printType', type);
             });
@@ -350,8 +355,7 @@ class PrintUploader {
             const preview = document.querySelector(`[data-file-id="${file.id}"]`);
             const copies = parseInt(preview.querySelector('.copies-count').textContent);
             const type = preview.querySelector('.toggle-btn.selected').dataset.value;
-            const pricePerPage = type === 'bw' ? 3 : 10;
-            total += copies * pricePerPage;
+            total += this.calculatePrice(file.pageCount, copies, type);
         });
         return total;
     }
