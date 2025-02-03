@@ -58,6 +58,13 @@ class PrintUploader {
     }
 
     showUploadProgress(fileCount) {
+        // Create modal container if it doesn't exist
+        if (!this.uploadModal) {
+            this.uploadModal = document.createElement('div');
+            this.uploadModal.id = 'uploadProgressModal';
+            document.body.appendChild(this.uploadModal);
+        }
+
         this.uploadModal.innerHTML = `
             <div class="upload-progress">
                 <div class="progress-icon">📄</div>
@@ -66,10 +73,25 @@ class PrintUploader {
                     <div class="progress-bar"></div>
                 </div>
                 <p class="file-count">0/${fileCount} files</p>
+                <div class="price-preview">
+                    Estimated Total: <span id="totalPrice">₹0</span>
+                </div>
                 <button class="cancel-btn">Cancel</button>
             </div>
         `;
-        this.uploadModal.classList.remove('hidden');
+        
+        // Ensure modal is visible before accessing elements
+        requestAnimationFrame(() => {
+            this.progressBar = this.uploadModal.querySelector('.progress-bar');
+            this.fileCountDisplay = this.uploadModal.querySelector('.file-count');
+            this.totalPriceDisplay = this.uploadModal.querySelector('#totalPrice');
+            
+            if (!this.progressBar || !this.fileCountDisplay) {
+                throw new Error('Progress elements not found in DOM');
+            }
+            
+            this.uploadModal.classList.remove('hidden');
+        });
 
         // Setup cancel button
         this.uploadModal.querySelector('.cancel-btn')
@@ -81,19 +103,40 @@ class PrintUploader {
         const fileCountDisplay = this.uploadModal.querySelector('.file-count');
         
         try {
-            // Process each file
+            let processedPages = 0;
+            // Process each file with actual content handling
             for (let i = 0; i < newFiles.length; i++) {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                progressBar.style.width = `${((i + 1) / newFiles.length) * 100}%`;
+                const file = newFiles[i];
+                // Real processing with page count
+                if (file.type === 'application/pdf') {
+                    const pdf = await pdfjsLib.getDocument(await file.arrayBuffer()).promise;
+                    file.pageCount = pdf.numPages;
+                    processedPages += pdf.numPages;
+                    await pdf.destroy();
+                } else {
+                    file.pageCount = 1;
+                    processedPages += 1; // 1 page per image/doc
+                }
+                
+                // Update progress
+                const progress = ((i + 1) / newFiles.length) * 100;
+                progressBar.style.width = `${progress}%`;
                 fileCountDisplay.textContent = `${i + 1}/${newFiles.length} files`;
             }
 
+            // Calculate price after full processing
+            const pricePerPage = 3; // Default B&W rate
+            const totalPrice = processedPages * pricePerPage;
+            
+            // Update UI before closing
+            this.updatePriceDisplay(totalPrice);
             this.uploadModal.classList.add('hidden');
+            
             await this.generatePreviews();
             this.showPrintOptions();
         } catch (error) {
             console.error('Upload failed:', error);
-            this.showError('Failed to process files. Please try again.');
+            this.showError(`Failed to process files: ${error.message}`);
         }
     }
 
@@ -109,7 +152,6 @@ class PrintUploader {
         for (const file of this.currentFiles) {
             const preview = this.createFilePreview(file);
             previewContainer.appendChild(preview);
-            totalPages += 1;
         }
 
         // Update page count in print options
@@ -132,6 +174,7 @@ class PrintUploader {
             <div class="file-info">
                 <p class="file-name">${file.name}</p>
                 <span class="file-size">${this.formatFileSize(file.size)}</span>
+                <span class="file-pages">${file.pageCount} ${file.pageCount === 1 ? 'page' : 'pages'}</span>
             </div>
             <button class="remove-file" title="Remove file">×</button>
         `;
@@ -255,6 +298,10 @@ class PrintUploader {
         });
 
         // Print type toggle
+        const typeBtn = preview.querySelector('.toggle-btn.selected');
+        if (!typeBtn) return;
+        const type = typeBtn.dataset.value;
+        
         preview.querySelectorAll('.toggle-group .toggle-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const group = btn.closest('.toggle-group');
@@ -264,7 +311,6 @@ class PrintUploader {
                 // Update price
                 const priceValue = preview.querySelector('.price-value');
                 const copies = parseInt(copiesCount.textContent);
-                const type = btn.dataset.value;
                 priceValue.textContent = `₹${this.calculatePrice(copies, type)}`;
                 
                 this.updateFileOptions(file, 'printType', type);
@@ -313,9 +359,19 @@ class PrintUploader {
     removeFile(fileToRemove) {
         this.currentFiles = this.currentFiles.filter(file => file !== fileToRemove);
         this.generatePreviews();
+        const previewImg = document.querySelector(`[data-file-id="${fileToRemove.id}"] img`);
+        if (previewImg) URL.revokeObjectURL(previewImg.src);
     }
 
     showPrintOptions() {
+        if (!this.printOptions) {
+            this.printOptions = document.getElementById('printOptions');
+            if (!this.printOptions) {
+                this.showError('Print options panel not found');
+                return;
+            }
+        }
+        
         this.printOptions.classList.remove('hidden');
         // Remove the extra "Continue to Payment" button if it exists
         const addToCartBtns = document.querySelectorAll('.add-to-cart');
@@ -329,6 +385,16 @@ class PrintUploader {
     }
 
     showError(message) {
-        window.toastManager.show(message, 'error');
+        window.toastManager.show(`Upload Error: ${message}`, 'error');
+    }
+
+    updatePriceDisplay(total) {
+        const priceDisplay = document.querySelector('#totalPrice');
+        if (!priceDisplay) return;
+        
+        priceDisplay.textContent = `₹${total}`;
+        // Update payment button
+        const paymentBtn = document.querySelector('#proceedToPayment .total-amount');
+        if (paymentBtn) paymentBtn.textContent = `₹${total}`;
     }
 } 

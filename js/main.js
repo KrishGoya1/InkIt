@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    if (typeof pdfjsLib !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        console.error('PDF worker not initialized');
+    }
+
     // Initialize the app
     init();
 }); 

@@ -558,4 +558,12 @@
     height: 48px;
     margin-bottom: 1rem;
     fill: var(--text-light);
+}
+
+.file-pages {
+    color: #666;
+    font-size: 0.875rem;
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid #ddd;
 } 
