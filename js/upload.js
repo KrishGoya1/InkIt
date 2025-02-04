@@ -280,15 +280,28 @@ class PrintUploader {
     }
 
     setupPreviewControls(preview, file) {
-        // Copies control
         const copiesControl = preview.querySelector('.copies-control');
         const copiesCount = copiesControl.querySelector('.copies-count');
-        
+        const priceValue = preview.querySelector('.price-value');
+        const printTypeButtons = preview.querySelectorAll('.toggle-btn');
+
+        const updateFilePrice = () => {
+            const selectedType = preview.querySelector('.toggle-btn.selected').dataset.value;
+            const pricePerPage = selectedType === 'color' ? 10 : 3;
+            const total = file.pageCount * pricePerPage * parseInt(copiesCount.textContent);
+            priceValue.textContent = `₹${total}`;
+            priceValue.classList.add('update-flash');
+            setTimeout(() => priceValue.classList.remove('update-flash'), 500);
+        };
+
+        // Copies controls
         copiesControl.querySelector('.decrease').addEventListener('click', () => {
             const current = parseInt(copiesCount.textContent);
             if (current > 1) {
                 copiesCount.textContent = current - 1;
                 this.updateFileOptions(file, 'copies', current - 1);
+                updateFilePrice();
+                this.updateTotalPrice();
             }
         });
 
@@ -297,30 +310,24 @@ class PrintUploader {
             if (current < 99) {
                 copiesCount.textContent = current + 1;
                 this.updateFileOptions(file, 'copies', current + 1);
+                updateFilePrice();
+                this.updateTotalPrice();
             }
         });
 
-        // Print type toggle
-        const typeBtn = preview.querySelector('.toggle-btn.selected');
-        if (!typeBtn) return;
-        const type = typeBtn.dataset.value;
-        
-        preview.querySelectorAll('.toggle-group .toggle-btn').forEach(btn => {
+        // Print type controls
+        printTypeButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                const group = btn.closest('.toggle-group');
-                group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('selected'));
+                printTypeButtons.forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
-                
-                // Update price
-                const priceValue = preview.querySelector('.price-value');
-                const copies = parseInt(copiesCount.textContent);
-                priceValue.textContent = `₹${
-                    this.calculatePrice(file.pageCount, copies, type)
-                }`;
-                
-                this.updateFileOptions(file, 'printType', type);
+                this.updateFileOptions(file, 'printType', btn.dataset.value);
+                updateFilePrice();
+                this.updateTotalPrice();
             });
         });
+
+        // Initial price calculation
+        updateFilePrice();
 
         // Remove file button
         preview.querySelector('.remove-file').addEventListener('click', () => {
@@ -342,22 +349,12 @@ class PrintUploader {
     }
 
     updateTotalPrice() {
-        const total = this.calculateTotalPrice();
-        const paymentFab = document.getElementById('proceedToPayment');
-        if (paymentFab) {
-            paymentFab.querySelector('.total-amount').textContent = `₹${total}`;
-        }
-    }
-
-    calculateTotalPrice() {
         let total = 0;
-        this.currentFiles.forEach(file => {
-            const preview = document.querySelector(`[data-file-id="${file.id}"]`);
-            const copies = parseInt(preview.querySelector('.copies-count').textContent);
-            const type = preview.querySelector('.toggle-btn.selected').dataset.value;
-            total += this.calculatePrice(file.pageCount, copies, type);
+        document.querySelectorAll('.file-preview').forEach(preview => {
+            const price = parseInt(preview.querySelector('.price-value').textContent.replace('₹', ''));
+            total += price;
         });
-        return total;
+        document.querySelector('.total-amount').textContent = `₹${total}`;
     }
 
     removeFile(fileToRemove) {
